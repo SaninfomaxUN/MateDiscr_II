@@ -1,5 +1,4 @@
 # Developed by David Santiago Cruz Hernandez
-import sys
 
 LatinSquare = False
 Group = False
