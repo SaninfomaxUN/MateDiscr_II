@@ -1,42 +1,45 @@
 # Developed by David Santiago Cruz Hernandez
 
+Matrix = []
+Border = []
 LatinSquare = False
 Group = False
 Neutral = False
+NeutralResult = 0
 Inverse = False
 Associativity = False
 
 
-def start(matriz):
+def start():
     print("Algotirmo desarrollado por David Santiago Cruz Hernandez, para Matematicas Discretas II")
-    print()
-    verifyLatinSquare(matriz)
-    neutro = getNeutral(matriz, getSet(matriz))
-    getInverse(matriz, getSet(matriz), neutro)
-    checkAssociativity(matriz, getSet(matriz))
+    inputMatrix()
+    verifyLatinSquare()
+    getNeutral(getSet())
+    getInverse(getSet())
+    checkAssociativity(getSet())
     printResults()
 
 
-def getSet(matriz):
-    set = matriz[0].copy()
+def getSet():
+    set = Matrix[0].copy()
     return set
 
 
-def verifyLatinSquare(matriz):
-    n = len(matriz)
+def verifyLatinSquare():
+    n = len(Matrix)
     numRepetido = False
     for fila in range(n):
         listaRevisionFila = []
         listaRevisionCol = []
         for col in range(n):
-            if matriz[fila][col] not in listaRevisionFila:
-                listaRevisionFila.append(matriz[fila][col])
+            if Matrix[fila][col] not in listaRevisionFila:
+                listaRevisionFila.append(Matrix[fila][col])
             else:
                 numRepetido = True
                 break
 
-            if matriz[col][fila] not in listaRevisionCol:
-                listaRevisionCol.append(matriz[col][fila])
+            if Matrix[col][fila] not in listaRevisionCol:
+                listaRevisionCol.append(Matrix[col][fila])
             else:
                 numRepetido = True
                 break
@@ -49,39 +52,39 @@ def verifyLatinSquare(matriz):
         LatinSquare = True
 
 
-def getResult(matriz, a, b):
-    fila = matriz[0].index(a)
-    col = matriz[0].index(b)
-    return matriz[fila][col]
+def getResult(a, b):
+    fila = Border.index(a)
+    col = Border.index(b)
+    return Matrix[fila][col]
 
 
-def getNeutral(matriz, setG):
-    neutro = ''
+def getNeutral(setG):
+    global NeutralResult
     for posibleNeutro in setG:
         contador = 0
         for dato in setG:
-            if posibleNeutro == dato:
-                continue
-            resultado = getResult(matriz, posibleNeutro, dato)
+            resultado = getResult(posibleNeutro, dato)
             if dato == resultado:
                 contador = contador + 1
-                if contador == len(setG) - 1:
-                    neutro = posibleNeutro
+                if contador == len(setG):
+                    NeutralResult = posibleNeutro
                     break
+            else:
+                break
 
-    if neutro != '':
-        print("→ El Neutro es: " + neutro + "\n")
+    if NeutralResult != "":
+        print("→ El Neutro es: " + NeutralResult + "\n")
         global Neutral
+
         Neutral = True
-    return neutro
 
 
-def getInverse(matriz, setG, neutro):
+def getInverse(setG):
     listaInversos = []
     for dato in setG:
         for posibleInverso in setG:
-            resultado = getResult(matriz, posibleInverso, dato)
-            if resultado == neutro:
+            resultado = getResult(posibleInverso, dato)
+            if resultado == NeutralResult:
                 if posibleInverso not in listaInversos:
                     listaInversos.append(posibleInverso)
                     continue
@@ -97,11 +100,11 @@ def getInverse(matriz, setG, neutro):
         print("→ No hay un Inverso para cada elemento del conjunto.\n")
 
 
-def checkAssociativity(matriz, setG):
+def checkAssociativity(setG):
     listResults = []
     print("→ Asociaciones posibles:\n")
     for pos in range(len(setG) - 1):
-        listResults.append(operateByPos(matriz, setG.copy(), pos))
+        listResults.append(operateByPos(setG.copy(), pos))
         print()
 
     print("→ Resultados de la Asociatividad obtenidos: " + str(listResults))
@@ -118,7 +121,7 @@ def checkAssociativity(matriz, setG):
         print(" El conjunto NO es asociativo\n")
 
 
-def operateByPos(matriz, setG, pos):
+def operateByPos(setG, pos):
     right = True
     for cont in range(len(setG) - 1):
         if not right:
@@ -126,7 +129,7 @@ def operateByPos(matriz, setG, pos):
         printAsssociativity(setG.copy(), pos)
         a = setG.pop(pos)
         b = setG.pop(pos)
-        result = getResult(matriz, a, b)
+        result = getResult(a, b)
         setG.insert(pos, result)
 
         if right:
@@ -149,11 +152,24 @@ def printAsssociativity(setG, pos):
 
 
 def inputMatrix():
-    n = int(input("Ingrese el Tamaño n:"))
-    matriz = []
-    for size in range(n):
-        matriz.append(input("Ingrese la Fila " + str(size) + " (separada por comas):").split(','))
-    return matriz
+    while True:
+        n = int(input("Ingrese el Tamaño n:"))
+        global Border
+        Border = input("Ingrese los elementos del Marco de la Tabla (separados por comas):  ").split(',')
+        for size in range(n):
+            Matrix.append(input("Ingrese la Fila " + str(size) + " (separada por comas):").split(','))
+        if verifyInput():
+            break
+        else:
+            print("\n ---- Por favor ingrese una tabla valida!! ---- \n")
+
+
+def verifyInput():
+    for subList in Matrix:
+        for element in subList:
+            if element not in Border:
+                return False
+    return True
 
 
 def printResults():
@@ -180,4 +196,4 @@ def returnIcon(answer):
 
 
 if __name__ == '__main__':
-    start(inputMatrix())
+    start()
